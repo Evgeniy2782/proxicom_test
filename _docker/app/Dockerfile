@@ -18,13 +18,21 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN useradd -ms /bin/bash admin
+
 COPY ./_docker/app/php.ini /usr/local/etc/php/conf.d/php.ini
 
+COPY . .
+
 # Install composer
-ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN curl -sS https://getcomposer.org/installer | php -- \
     --filename=composer \
     --install-dir=/usr/local/bin
 
+RUN chown -R admin:admin /var/www
 
+RUN chmod 775 /var/www
 
+RUN chmod -R 777 storage && chmod -R 777 bootstrap/cache
+
+USER admin
